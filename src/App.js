@@ -39,6 +39,31 @@ class App extends Component {
 
   componentDidMount() {
 
+    if (this.state.msalInstance.getAccount()) {
+
+      let id = this.state.msalInstance.getAccount();
+      this.setState({
+        loggedin: true,
+        email: id.userName,
+        username: id.name
+      }, () => {
+        this.getUserID();        
+      });
+
+    } else {
+      let loginRequest = {
+        scopes: ["user.read"] // optional Array<string>
+      };
+      this.state.msalInstance.loginRedirect(loginRequest)
+        .then(response => {
+
+        })
+        .catch(err => {
+          // handle error
+        });
+    }
+        
+   
     let request_url = "/users/solutions/nousers"
 
     nh4h.get(request_url)
@@ -61,18 +86,7 @@ class App extends Component {
       console.error(response);
     });
     
-    //get login info
-    if (this.state.msalInstance.getAccount()) {
-
-      let id = this.state.msalInstance.getAccount();
-      this.setState({
-        email: id.userName,
-        username: id.name
-      }, () => {
-        this.getUserID();
-      });
-
-    } 
+   
   }
 
   getUserID = () => {
